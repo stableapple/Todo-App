@@ -1,17 +1,60 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import './style.css';
+import TodoItems from './TodoItems'
+
+class App extends React.Component{
+
+    constructor(props) {
+        super(props);
+            this.state = {
+                items:[]
+            };
+        this.addItem = this.addItem.bind(this);
+    }
+    addItem(e) {
+        console.log(this.state.items)
+        if(this._inputElement.value !=="") {
+            var newItem = {
+                text: this._inputElement.value,
+                key: Date.now()
+            };
+            console.log(newItem)
+            this.setState((prevState) => {
+                return {
+                    items: prevState.items.concat(newItem)
+                };
+            });
+            
+        }
+        console.log(this.state.items);
+        e.preventDefault();
+    }
+
+
+    render() {
+        return(
+            <div>
+                <form onSubmit={this.addItem}>
+                        <div className="form-group">
+                            <label htmlFor="exampleTextarea">Example textarea</label>
+                            <input className="formControl" id="exampleTextarea" rows="3" ref={(a) => this._inputElement= a}></input>  
+                        </div>
+                        <button type="submit" className="btn btn-danger">ADD TASK</button>
+                        <h1> Your Todos!</h1>
+                        <div className="progress">
+                                <div className="progress-bar bg-danger" role="progressbar" style={{width: "100%"}} aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                </form>
+                <TodoItems entries={this.state.items} />
+                
+            </div>
+        );
+    }
+
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <App />,
+    document.querySelector('#root')
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
