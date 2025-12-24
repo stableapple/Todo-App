@@ -17,5 +17,8 @@ spec:
       containers:
       - name: todo-app
         image: ri25/todo-app:13
+        env:
+         -name: CI
+          value: "true"
         ports:
-        - containerPort: 8080
+        - containerPort: 3000
