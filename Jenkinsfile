@@ -13,6 +13,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+				script {
+                    // Fix for "fatal: not in a git directory" due to ownership
+                    sh 'git config --global --add safe.directory "*"'
+                }
                 checkout scm    
             }
         }
