@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: todo-app
-        image: ri25/todo-app:replaceImageTag
+        image: ri25/todo-app:13
         ports:
         - containerPort: 8080
