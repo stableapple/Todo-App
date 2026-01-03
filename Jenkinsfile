@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'ri25/node-docker:latest'
+            // Mounting the docker socket allows "Docker-in-Docker" sidecar behavior
             args '-v /var/run/docker.sock:/var/run/docker.sock -u 0:0'
         }
     }
@@ -13,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-				script {
+                script {
                     // Fix for "fatal: not in a git directory" due to ownership
                     sh 'git config --global --add safe.directory "*"'
                 }
@@ -49,23 +50,24 @@ pipeline {
 
         stage('Update Deployment.yml') {
             steps {
+                // Corrected the nested brackets here
                 withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
-					 dir("${env.WORKSPACE}") {
-                    sh """
-                        git config user.email "riddhi01.menon@gmail.com"
-                        git config user.name "stableapple"
-                        
-                        # Update the image line in deployment.yml
-                        sed -i "s|image: .*|image: ri25/todo-app:${env.BUILD_NUMBER}|g" deployment.yml
-                        
-                        git add deployment.yml
-                        git commit -m "Update deployment image to version ${env.BUILD_NUMBER}" || echo "No changes to commit"
-                        
-                        # Use the token to push back to GitHub
-                        git push https://${GITHUB_TOKEN}@github.com/stableapple/todo-app.git HEAD:main
-                    """
+                    dir("${env.WORKSPACE}") {
+                        sh """
+                            git config user.email "riddhi01.menon@gmail.com"
+                            git config user.name "stableapple"
+                            
+                            # Update the image line in deployment.yml
+                            sed -i "s|image: .*|image: ri25/todo-app:${env.BUILD_NUMBER}|g" deployment.yml
+                            
+                            git add deployment.yml
+                            git commit -m "Update deployment image to version ${env.BUILD_NUMBER}" || echo "No changes to commit"
+                            
+                            # Use the token to push back to GitHub
+                            git push https://${GITHUB_TOKEN}@github.com/stableapple/todo-app.git HEAD:main
+                        """
+                    }
                 }
-				}
             }
         }
     }
